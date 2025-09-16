@@ -1,0 +1,83 @@
+services:
+  web:
+    build:
+      context: .
+      dockerfile: deployments/compose/django/Dockerfile
+    command: /start
+    restart: always
+    env_file:
+      - .env
+    volumes:
+      - .:/app:cached
+    ports:
+      - "${PORT:-8001}:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+#      redis:
+#        condition: service_started
+      elasticsearch:
+        condition: service_healthy
+    networks:
+      - backend
+
+  db:
+    image: postgres:16-alpine
+    restart: always
+    env_file:
+      - .env
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB} || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - backend
+
+#  redis:
+#    image: redis:7-alpine
+#    restart: always
+#    command: ["redis-server", "--appendonly", "yes"]
+#    volumes:
+#      - redis_data:/data
+#    networks:
+#      - backend
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:9.1.1
+    container_name: elasticsearch
+    restart: always
+    environment:
+      discovery.type: single-node
+      ES_JAVA_OPTS: -Xms512m -Xmx512m
+      xpack.security.enabled: "false"   # disable auth for dev only!
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - es_data:/usr/share/elasticsearch/data
+    ports:
+      - "9200:9200"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9200/_cluster/health"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+    networks:
+      - backend
+
+volumes:
+  pg_data:
+#  redis_data:
+  es_data:
+
+networks:
+  backend:
+    driver: bridge
