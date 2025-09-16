@@ -10,6 +10,7 @@ load_dotenv(find_dotenv(".env"))
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.getenv("SECRET_KEY")
+DOMAIN = os.getenv("DOMAIN")
 
 DEBUG = os.getenv("DEBUG")
 if DEBUG is not None:

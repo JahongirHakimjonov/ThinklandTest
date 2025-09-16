@@ -14,15 +14,15 @@ RUN apt update && \
 
 
 # Copy scripts and set permissions
-#COPY ./deployments/compose/django/celery/worker/start /start-celeryworker
+COPY ./deployments/compose/django/celery/worker/start /start-celeryworker
 #COPY ./deployments/compose/django/celery/beat/start /start-celerybeat
 #COPY ./deployments/compose/django/celery/flower/start /start-flower
 COPY ./deployments/compose/django/entrypoint /entrypoint
 COPY ./deployments/compose/django/start /start
 
 # Copy and set permissions for celery worker start script
-#RUN sed -i 's/\r$//g' /start-celeryworker && \
-#    chmod +x /start-celeryworker
+RUN sed -i 's/\r$//g' /start-celeryworker && \
+    chmod +x /start-celeryworker
 
 # Copy and set permissions for celery beat start script
 #RUN sed -i 's/\r$//g' /start-celerybeat && \

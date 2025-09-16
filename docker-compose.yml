@@ -14,8 +14,8 @@ services:
     depends_on:
       db:
         condition: service_healthy
-#      redis:
-#        condition: service_started
+      redis:
+        condition: service_started
       elasticsearch:
         condition: service_healthy
     networks:
@@ -40,14 +40,14 @@ services:
     networks:
       - backend
 
-#  redis:
-#    image: redis:7-alpine
-#    restart: always
-#    command: ["redis-server", "--appendonly", "yes"]
-#    volumes:
-#      - redis_data:/data
-#    networks:
-#      - backend
+  redis:
+    image: redis:7-alpine
+    restart: always
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redis_data:/data
+    networks:
+      - backend
 
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:9.1.1
@@ -73,9 +73,27 @@ services:
     networks:
       - backend
 
+  celery_worker:
+    build:
+      context: .
+      dockerfile: deployments/compose/django/Dockerfile
+    command: /start-celeryworker
+    restart: always
+    env_file:
+      - .env
+    volumes:
+      - .:/app
+    depends_on:
+      redis:
+        condition: service_started
+      db:
+        condition: service_started
+    networks:
+      - backend
+
 volumes:
   pg_data:
-#  redis_data:
+  redis_data:
   es_data:
 
 networks:

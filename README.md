@@ -9,7 +9,7 @@ A **Django + DRF + Elasticsearch** based project.
 ### 1. Clone the repository
 
 ```bash
-git clone <your-repo-url>
+git clone https://github.com/JahongirHakimjonov/ThinklandTest.git
 cd ThinklandTest
 cp .env.example .env
 ```
@@ -29,7 +29,7 @@ This will start:
 Access the app at:
 👉 [http://localhost:8000](http://localhost:8000)
 
-### 3. Run locally (without Docker)
+### 3. Run this command in Docker container
 
 Start PostgreSQL and Elasticsearch manually, then create a superuser:
 

@@ -38,7 +38,7 @@ def send_confirm(self, email: str, code: str) -> None:
 
         # Use EmailMultiAlternatives (better than send_mail for multi-part messages)
         message = EmailMultiAlternatives(
-            subject, text_content, f"LabSearch <{from_email}>", [email]
+            subject, text_content, f"Shop <{from_email}>", [email]
         )
         message.attach_alternative(html_content, "text/html")
         message.send(fail_silently=False)
